@@ -1,4 +1,6 @@
 from display import Display
+
+
 class Node:
     parent: "Node"
     row: int
@@ -29,13 +31,14 @@ class Astar:
     children_counter = 0
     all_visited: set["Node"] = set()
     answer_node: "Node"
+    directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
-    def __init__(self, row_start, col_start, row_goal, col_goal, alpha, matrix ,conected = True):
-        self.row_start = row_start
-        self.col_start = col_start
-        self.row_goal = row_goal
-        self.col_goal = col_goal
+    def __init__(self, matrix, alpha, conected=True, eight_direction=False):
+        if eight_direction:
+            self.directions = [(-1, 0), (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
         self.matrix = matrix
+        self.row_start, self.col_start = self.find_node(2)
+        self.row_goal, self.col_goal = self.find_node(3)
         self.alpha = alpha
         self.map_height = len(matrix)
         self.map_width = len(matrix[0])
@@ -43,7 +46,12 @@ class Astar:
         self.is_connected = conected
         self.start_node = Node(None, self.row_start, self.col_start, self.row_goal, self.col_goal, 0, self.alpha)
         self.queue.append(self.start_node)
-        # self.insert(self.start_node)
+
+    def find_node(self, num):
+        for row in range(len(self.matrix)):
+            for col in range(len(self.matrix[0])):
+                if self.matrix[row][col] == num:
+                    return (row, col)
 
     def find_best_node(self) -> "Node":
         j = 0
@@ -53,18 +61,18 @@ class Astar:
         return self.queue.pop(j)
 
     def create_children(self, node: "Node"):
-        directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
-        for dirs in directions:
+        for dirs in self.directions:
             row_new = node.row + dirs[0]
             col_new = node.col + dirs[1]
             if self.is_connected:
                 row_new = (node.row + dirs[0]) % self.map_height
                 col_new = (node.col + dirs[1]) % self.map_width
             if 0 <= row_new < self.map_height and 0 <= col_new < self.map_width:
-                if self.matrix[row_new][col_new] == 0 and self.is_not_duplicated(node.parent, row_new, col_new):
+                if self.matrix[row_new][col_new] != 1 and self.is_not_duplicated(node.parent, row_new, col_new):
                     self.children_counter += 1
                     self.all_visited.add((node.row, node.col))
-                    self.queue.append(Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha))
+                    self.queue.append(
+                        Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha))
 
     def is_not_duplicated(self, node: "Node", row_new: int, col_new: int) -> bool:
         while node != None:
@@ -121,21 +129,20 @@ class Astar:
 
 
 if __name__ == "__main__":
-    # matrix = [[0 for _ in range(5)] for _ in range (5)]
     matrix = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
-        [0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 3, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 1, 0, 0, 0, 2, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [0, 1, 1, 0, 0, 0, 0, 1, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 0, 1, 1, 1, 1, 1, 0, 0],
+        [0, 0, 0, 1, 0, 1, 1, 1, 0, 0],
     ]
     # If alpha be more that 1 algorithm gonna be Greedy like greedo
     # If alpha be 1 the algorithm is a*
 
-    a= Astar(8, 4, 2, 4, 1, matrix,True)
+    a = Astar(matrix, 0, conected=False , eight_direction=False)
     Display(a).show(60)
