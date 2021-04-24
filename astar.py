@@ -134,15 +134,15 @@ if __name__ == "__main__":
         [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
         [0, 0, 0, 0, 0, 3, 1, 0, 0, 0],
         [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 0, 0, 0, 2, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [0, 1, 1, 0, 0, 0, 0, 1, 0, 0],
+        [0, 1, 1, 0, 0, 2, 0, 1, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
         [0, 0, 0, 1, 0, 1, 1, 1, 0, 0],
     ]
     # If alpha be more that 1 algorithm gonna be Greedy like greedo
     # If alpha be 1 the algorithm is a*
 
-    a = Astar(matrix, 0, conected=False , eight_direction=False)
-    Display(a).show(60)
+    a = Astar(matrix, 1, conected=True , eight_direction=True)
+    Display(a).show(30)

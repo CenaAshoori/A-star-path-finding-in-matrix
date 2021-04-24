@@ -35,15 +35,27 @@ astar = Astar(matrix, 1)
 ```
 3. Create Display object and pass astar to it and call show() method
 ```python
- Display(a).show()
+ Display(astar).show()
 ```
-
-
-
-
+---
+##Find Path With Connected Edges
+```python
+astar = Astar(matrix, 1, conected=True)
+Display(astar).show()
+```
+![img.gif](doc/connected.gif)
 
 ----
-### Alpha
+## 8 Direction 
+
+```python
+astar = Astar(matrix, 1, conected=True , eight_direction=True)
+Display(astar).show()
+```
+![img.gif](doc/8-dir.gif)
+
+----
+## Alpha
 Second parameter in this solver is Alpha variable that determined that search algorithm be on of **THIS** :
 
 1. Uniform Cost (0)
@@ -52,21 +64,23 @@ astar = Astar(matrix, 0)
 ```
 ![img.gif](doc/uniform-cost.gif)
 
+----
 2. A* (1)
 ```python
 astar = Astar(matrix, 1)
 ```
 ![img.gif](doc/astar.gif)
+
+----
 3. Greedy (2)
 ```python
 astar = Astar(matrix, 2)
 ```
 ![img.gif](doc/greedy.gif)
 
-
 As you can see Uniform Cost and A star is optimal
 
-
+----
 ### Heuristic: 
 Pythagoras Formula
 ![img_1.png](doc/pythagoras.png)
