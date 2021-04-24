@@ -3,6 +3,7 @@ In this repo we'll Find the shortest path in matrix (with Connected Edges and wi
 
 
 ##Quick start :
+
 First of all
 ```python
 pip install pygame
