@@ -43,7 +43,7 @@ astar = Astar(matrix, 1)
 astar = Astar(matrix, 1, conected=True)
 Display(astar).show()
 ```
-![img.gif](doc/connected.gif)
+![img.gif](images/connected.gif)
 
 ----
 ## 8 Direction 
@@ -52,7 +52,7 @@ Display(astar).show()
 astar = Astar(matrix, 1, conected=True , eight_direction=True)
 Display(astar).show()
 ```
-![img.gif](doc/8-dir.gif)
+![img.gif](images/8-dir.gif)
 
 ----
 ## Alpha
@@ -62,28 +62,28 @@ Second parameter in this solver is Alpha variable that determined that search al
  ```python
 astar = Astar(matrix, 0)
 ```
-![img.gif](doc/uniform-cost.gif)
+![img.gif](images/uniform-cost.gif)
 
 ----
 2. A* (1)
 ```python
 astar = Astar(matrix, 1)
 ```
-![img.gif](doc/astar.gif)
+![img.gif](images/astar.gif)
 
 ----
 3. Greedy (2)
 ```python
 astar = Astar(matrix, 2)
 ```
-![img.gif](doc/greedy.gif)
+![img.gif](images/greedy.gif)
 
 As you can see Uniform Cost and A star is optimal
 
 ----
 ### Heuristic: 
 Pythagoras Formula
-![img_1.png](doc/pythagoras.png)
+![img_1.png](images/pythagoras.png)
 ```python
 self.h = ((abs(row_goal - row) ** 2) + abs(col_goal - col) ** 2) ** .5
 ```
