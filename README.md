@@ -2,7 +2,7 @@
 In this repo we'll Find the shortest path in matrix (with Connected Edges and without it) by A*
 
 
-##Quick start :
+## Quick start :
 
 First of all
 ```python
