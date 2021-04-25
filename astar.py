@@ -33,9 +33,10 @@ class Astar:
     answer_node: "Node"
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
-    def __init__(self, matrix, alpha, conected=True, eight_direction=False):
+    def __init__(self, matrix, alpha, conected=True, eight_direction=False, ida_star=False, iterate=2):
         if eight_direction:
             self.directions = [(-1, 0), (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+
         self.matrix = matrix
         self.row_start, self.col_start = self.find_node(2)
         self.row_goal, self.col_goal = self.find_node(3)
@@ -46,12 +47,15 @@ class Astar:
         self.is_connected = conected
         self.start_node = Node(None, self.row_start, self.col_start, self.row_goal, self.col_goal, 0, self.alpha)
         self.queue.append(self.start_node)
+        self.is_idastar = ida_star
+        self.iterate = iterate
+        self.max_f = 1
 
     def find_node(self, num):
         for row in range(len(self.matrix)):
             for col in range(len(self.matrix[0])):
                 if self.matrix[row][col] == num:
-                    return (row, col)
+                    return row, col
 
     def find_best_node(self) -> "Node":
         j = 0
@@ -70,18 +74,17 @@ class Astar:
                 col_new = (node.col + dirs[1]) % self.map_width
             if 0 <= row_new < self.map_height and 0 <= col_new < self.map_width and (
                     row_new, col_new) not in self.all_visited:
-                if self.matrix[row_new][col_new] != 1 :
-                    self.children_counter += 1
-                    self.queue.append(
-                        Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha))
-                    self.all_visited.add((row_new, col_new))
-
-    def is_not_duplicated(self, node: "Node", row_new: int, col_new: int) -> bool:
-        while node != None:
-            if node.row == row_new and node.col == col_new:
-                return False
-            node = node.parent
-        return True
+                if self.matrix[row_new][col_new] != 1:
+                    new_node = Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha)
+                    if self.is_idastar:
+                        if new_node.f <= self.max_f:
+                            self.children_counter += 1
+                            self.queue.append(new_node)
+                            self.all_visited.add((row_new, col_new))
+                    else:
+                        self.children_counter += 1
+                        self.queue.append(new_node)
+                        self.all_visited.add((row_new, col_new))
 
     def path(self) -> list[(int, int)]:
         ans = []
@@ -103,18 +106,10 @@ class Astar:
                     print(1, end=" ")
                 else:
                     print(0, end=" ")
-            print()
-        return set_path
 
-    def init(self):
-        self.queue.clear()
-        self.queue.append(self.start_node)
-        self.all_visited.clear()
-        self.children_counter = 0
-
-    def run(self, complete=True):
+    def run(self):
         if len(self.queue):
-        # while len(self.queue)>=1 :
+            # while len(self.queue)>=1 :
             # num -= 10
             # TODO ADD SORTING queue to speedup access to the best node
             # find_best_node return a tuple with (index , node)
@@ -129,7 +124,11 @@ class Astar:
                 return True
             self.create_children(best_node)
             return True
-        else :
+        else:
+            if self.is_idastar:
+                self.all_visited.clear()
+                self.queue.append(self.start_node)
+                self.max_f += self.iterate
             return False
 
 
@@ -157,5 +156,5 @@ if __name__ == "__main__":
     # If alpha be more that 1 algorithm gonna be Greedy like greedo
     # If alpha be 1 the algorithm is a*
 
-    a = Astar(matrix, 1, conected=False, eight_direction=False)
-    Display(a).show(20)
+    a = Astar(matrix, 1, conected=True, eight_direction=False,ida_star=True )
+    Display(a).show(10)

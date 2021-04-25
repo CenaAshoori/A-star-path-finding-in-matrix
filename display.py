@@ -114,12 +114,15 @@ class Display:
                     textRect.center = (self.WIDTH // 2, (self.HEIGHT // 2) + self.CELL_HEIGHT)
                     self.screen.blit(text_childrens, textRect)
             # No path message
-            elif not self.astar.is_found:
-                font = pygame.font.Font('freesansbold.ttf', 32)
-                text_nopath = font.render(f"No Path - {self.astar.children_counter} Node Visited", True, ORANGE, (0, 0, 0))
-                textRect = text_nopath.get_rect()
-                textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
-                self.screen.blit(text_nopath, textRect)
+            else:
+                if self.astar.is_idastar:
+                    self.visualizeGrid()
+                else :
+                    font = pygame.font.Font('freesansbold.ttf', 32)
+                    text_nopath = font.render(f"No Path - {self.astar.children_counter} Node Visited", True, ORANGE, (0, 0, 0))
+                    textRect = text_nopath.get_rect()
+                    textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
+                    self.screen.blit(text_nopath, textRect)
 
             pygame.display.update()
             FPSCLOCK.tick(clock)
