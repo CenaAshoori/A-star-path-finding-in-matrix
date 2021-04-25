@@ -108,3 +108,4 @@ class Display:
                 self.drawCell(self.node.all_visited, (86, 101, 115), (44, 62, 80))
             pygame.display.update()
             FPSCLOCK.tick(clock)
+

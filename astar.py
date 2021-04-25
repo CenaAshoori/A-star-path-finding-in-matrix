@@ -56,21 +56,21 @@ class Astar:
     def find_best_node(self) -> "Node":
         j = 0
         for i in range(len(self.queue)):
-            if self.queue[i].f < self.queue[j].f:
+            if self.queue[i].f <= self.queue[j].f:
                 j = i
         return self.queue.pop(j)
 
     def create_children(self, node: "Node"):
+        self.all_visited.add((node.row, node.col))
         for dirs in self.directions:
             row_new = node.row + dirs[0]
             col_new = node.col + dirs[1]
             if self.is_connected:
                 row_new = (node.row + dirs[0]) % self.map_height
                 col_new = (node.col + dirs[1]) % self.map_width
-            if 0 <= row_new < self.map_height and 0 <= col_new < self.map_width:
+            if 0 <= row_new < self.map_height and 0 <= col_new < self.map_width and (row_new,col_new) not in self.all_visited:
                 if self.matrix[row_new][col_new] != 1 and self.is_not_duplicated(node.parent, row_new, col_new):
                     self.children_counter += 1
-                    self.all_visited.add((node.row, node.col))
                     self.queue.append(
                         Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha))
 
@@ -111,8 +111,10 @@ class Astar:
         self.children_counter = 0
 
     def run(self, complete=True):
-        # while len(self.queue):
+        num = 3
+        # while len(self.queue) :
         if len(self.queue):
+            # num -= 10
             # TODO ADD SORTING queue to speedup access to the best node
             # find_best_node return a tuple with (index , node)
             best_node = self.find_best_node()
@@ -125,7 +127,7 @@ class Astar:
                 self.print_path()
                 return True
             self.create_children(best_node)
-            return False
+            # return False
 
 
 if __name__ == "__main__":
@@ -144,5 +146,5 @@ if __name__ == "__main__":
     # If alpha be more that 1 algorithm gonna be Greedy like greedo
     # If alpha be 1 the algorithm is a*
 
-    a = Astar(matrix, 1, conected=True , eight_direction=True)
-    Display(a).show(30)
+    a = Astar(matrix,1, conected=True , eight_direction=False)
+    Display(a).show(40)

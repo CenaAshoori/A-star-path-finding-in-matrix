@@ -1,6 +1,5 @@
 # A star path finding in matrix
-In this repo we'll Find the shortest path in matrix (with Connected Edges and without it) by A*
-
+In this repo we'll Find the shortest path in matrix (with Connected Edges and without it) by Uniform Cost , A* , Greedy
 
 ## Quick start :
 
