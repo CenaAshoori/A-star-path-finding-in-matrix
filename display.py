@@ -25,7 +25,7 @@ FPSCLOCK = pygame.time.Clock()
 class Display:
     def __init__(self, node: "Astar"):
         self.matrix = node.matrix
-        self.node = node
+        self.astar = node
         self.CELL_SIZE = 500 // max(len(self.matrix), len(self.matrix[0]))
         self.HEIGHT = len(self.matrix) * self.CELL_SIZE
         self.WIDTH = len(self.matrix[0]) * self.CELL_SIZE
@@ -92,23 +92,31 @@ class Display:
                 if event.type == 256:
                     self.terminate()
 
-            self.node.run()
-            if self.node.is_found:
-                # draw answer
-                # number in tuple are rgb code , don't panic
-                self.drawCell(self.node.path(), (23, 165, 137), (17, 120, 100))
-                font = pygame.font.Font('freesansbold.ttf', 32)
-                text_path = font.render(f"Path Length:{len(self.node.path())}", True, ORANGE, (0, 0, 0))
-                text_childrens = font.render(f"Created Children:{self.node.children_counter}", True, ORANGE, (0, 0, 0))
-                textRect = text_path.get_rect()
-                textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
-                self.screen.blit(text_path, textRect)
-                textRect.center = (self.WIDTH // 2, (self.HEIGHT // 2) + self.CELL_HEIGHT)
-                self.screen.blit(text_childrens, textRect)
+
+            if self.astar.run():
+                if self.astar.is_found:
+                    # draw answer
+                    # number in tuple are rgb code , don't panic
+                    self.drawCell(self.astar.path(), (23, 165, 137), (17, 120, 100))
+                    font = pygame.font.Font('freesansbold.ttf', 32)
+                    text_path = font.render(f"Path Length:{len(self.astar.path())}", True, ORANGE, (0, 0, 0))
+                    text_childrens = font.render(f"Created Children:{self.astar.children_counter}", True, ORANGE, (0, 0, 0))
+                    textRect = text_path.get_rect()
+                    textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
+                    self.screen.blit(text_path, textRect)
+                    textRect.center = (self.WIDTH // 2, (self.HEIGHT // 2) + self.CELL_HEIGHT)
+                    self.screen.blit(text_childrens, textRect)
+                else :
+                    # draw visited node
+                    self.drawCell(self.astar.all_visited, (86, 101, 115), (44, 62, 80))
+                    # draw next candidate
+                    self.drawNextCandidate(self.astar.queue, (212, 172, 13), (244, 208, 63))
             else:
-                # draw visited node
-                self.drawCell(self.node.all_visited, (86, 101, 115), (44, 62, 80))
-                # draw next candidate
-                self.drawNextCandidate(self.node.queue, (212, 172, 13), (244, 208, 63))
+                font = pygame.font.Font('freesansbold.ttf', 32)
+                text_nopath = font.render(f"No Path,{self.astar.children_counter} Node Visited", True, ORANGE, (0, 0, 0))
+                textRect = text_nopath.get_rect()
+                textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
+                self.screen.blit(text_nopath, textRect)
+
             pygame.display.update()
             FPSCLOCK.tick(clock)
