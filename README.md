@@ -39,7 +39,8 @@ astar = Astar(matrix, 1)
  Display(astar).show()
 ```
 ---
-## Finding Path IN a Matrix With Connected Edges
+## ADDON
+### Finding Path IN a Matrix With Connected Edges
 ```python
 astar = Astar(matrix, 1, conected=True)
 Display(astar).show()
@@ -47,7 +48,7 @@ Display(astar).show()
 ![img.gif](images/connected.gif)
 
 ----
-## 8 Direction 
+### 8 Direction 
 
 ```python
 astar = Astar(matrix, 1, conected=True , eight_direction=True)
