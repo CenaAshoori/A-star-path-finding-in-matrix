@@ -115,7 +115,7 @@ class Display:
                     self.screen.blit(text_childrens, textRect)
             # No path message
             else:
-                if self.astar.is_idastar:
+                if self.astar.is_idastar :
                     self.visualizeGrid()
                 else :
                     font = pygame.font.Font('freesansbold.ttf', 32)
