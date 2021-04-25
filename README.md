@@ -39,7 +39,7 @@ astar = Astar(matrix, 1)
  Display(astar).show()
 ```
 ---
-##Find Path With Connected Edges
+## Finding Path IN a Matrix With Connected Edges
 ```python
 astar = Astar(matrix, 1, conected=True)
 Display(astar).show()
