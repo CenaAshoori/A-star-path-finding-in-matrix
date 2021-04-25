@@ -119,3 +119,4 @@ dmypy.json
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/dictionaries
 .idea/A-star-path-finding-in-matrix.iml
+*.xml

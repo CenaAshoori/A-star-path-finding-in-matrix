@@ -26,15 +26,16 @@ class Display:
     def __init__(self, node: "Astar"):
         self.matrix = node.matrix
         self.node = node
-        self.HEIGHT = len(self.matrix) * 50
-        self.WIDTH = len(self.matrix) * 50
-        self.CELL_SIZE = 10
-        self.CELL_HEIGHT = int(self.HEIGHT/ self.CELL_SIZE)
-        self.CELL_WIDTH = int(self.WIDTH/ self.CELL_SIZE)
-        self.gridDisplay = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.CELL_SIZE = 500 // max(len(self.matrix), len(self.matrix[0]))
+        self.HEIGHT = len(self.matrix) * self.CELL_SIZE
+        self.WIDTH = len(self.matrix[0]) * self.CELL_SIZE
+
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+
+        self.CELL_WIDTH = self.CELL_SIZE
+        self.CELL_HEIGHT = self.CELL_SIZE
         pygame.display.set_caption('A* - Find Shortest Path')
         pygame.init()
-
 
     def terminate(self):
         pygame.quit()
@@ -43,13 +44,13 @@ class Display:
     # we use the sizes to draw as well as to do our "steps" in the loops.
 
     def createSquare(self, x, y, color):
-        pygame.draw.rect(self.gridDisplay, color, [x, y, self.CELL_WIDTH, self.CELL_HEIGHT])
+        pygame.draw.rect(self.screen, color, [x, y, self.CELL_WIDTH, self.CELL_HEIGHT])
 
     def drawGrid(self):
         for x in range(0, self.CELL_WIDTH, self.CELL_WIDTH):  # draw vertical lines
-            pygame.draw.line(self.gridDisplay, DARKGRAY, (x, 0), (x, self.CELL_HEIGHT))
+            pygame.draw.line(self.screen, DARKGRAY, (x, 0), (x, self.CELL_HEIGHT))
         for y in range(0, self.CELL_HEIGHT, self.CELL_WIDTH):  # draw horizontal lines
-            pygame.draw.line(self.gridDisplay, DARKGRAY, (0, y), (self.CELL_WIDTH, y))
+            pygame.draw.line(self.screen, DARKGRAY, (0, y), (self.CELL_WIDTH, y))
 
     def visualizeGrid(self):
         r = 0  # we start at the top of the screen
@@ -73,7 +74,7 @@ class Display:
 
             self.createSquare(col, row, color)
             cell_frame = pygame.Rect(col + 4, row + 4, self.CELL_WIDTH - 8, self.CELL_WIDTH - 8)
-            pygame.draw.rect(self.gridDisplay, frame_color, cell_frame)
+            pygame.draw.rect(self.screen, frame_color, cell_frame)
 
     def drawCell(self, list_item, color, frame_color):
         for item in list_item:
@@ -82,7 +83,7 @@ class Display:
 
             self.createSquare(col, row, frame_color)
             cell_frame = pygame.Rect(col + 4, row + 4, self.CELL_WIDTH - 8, self.CELL_WIDTH - 8)
-            pygame.draw.rect(self.gridDisplay, color, cell_frame)
+            pygame.draw.rect(self.screen, color, cell_frame)
 
     def show(self, clock=30):
         self.visualizeGrid()
@@ -97,10 +98,13 @@ class Display:
                 # number in tuple are rgb code , don't panic
                 self.drawCell(self.node.path(), (23, 165, 137), (17, 120, 100))
                 font = pygame.font.Font('freesansbold.ttf', 32)
-                text = font.render(f"Path Length :{len(self.node.path())}", True, ORANGE, (0, 0, 0))
-                textRect = text.get_rect()
+                text_path = font.render(f"Path Length:{len(self.node.path())}", True, ORANGE, (0, 0, 0))
+                text_childrens = font.render(f"Created Children:{self.node.children_counter}", True, ORANGE, (0, 0, 0))
+                textRect = text_path.get_rect()
                 textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
-                self.gridDisplay.blit(text, textRect)
+                self.screen.blit(text_path, textRect)
+                textRect.center = (self.WIDTH // 2, (self.HEIGHT // 2) + self.CELL_HEIGHT)
+                self.screen.blit(text_childrens, textRect)
             else:
                 # draw next candidate
                 self.drawNextCandidate(self.node.queue, (212, 172, 13), (244, 208, 63))
@@ -108,4 +112,3 @@ class Display:
                 self.drawCell(self.node.all_visited, (86, 101, 115), (44, 62, 80))
             pygame.display.update()
             FPSCLOCK.tick(clock)
-

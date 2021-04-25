@@ -68,7 +68,8 @@ class Astar:
             if self.is_connected:
                 row_new = (node.row + dirs[0]) % self.map_height
                 col_new = (node.col + dirs[1]) % self.map_width
-            if 0 <= row_new < self.map_height and 0 <= col_new < self.map_width and (row_new,col_new) not in self.all_visited:
+            if 0 <= row_new < self.map_height and 0 <= col_new < self.map_width and (
+                    row_new, col_new) not in self.all_visited:
                 if self.matrix[row_new][col_new] != 1 and self.is_not_duplicated(node.parent, row_new, col_new):
                     self.children_counter += 1
                     self.queue.append(
@@ -143,8 +144,16 @@ if __name__ == "__main__":
         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
         [0, 0, 0, 1, 0, 1, 1, 1, 0, 0],
     ]
+    # matrix = [
+    #     [0, 0, 0, 1, 3],
+    #     [0, 1, 0, 1, 0],
+    #     [0, 1, 0, 1, 0],
+    #     [0, 0, 0, 1, 0],
+    #     [2, 1, 0, 0, 0],
+    # ]
+
     # If alpha be more that 1 algorithm gonna be Greedy like greedo
     # If alpha be 1 the algorithm is a*
 
-    a = Astar(matrix,1, conected=True , eight_direction=False)
-    Display(a).show(40)
+    a = Astar(matrix, 1, conected=False, eight_direction=False)
+    Display(a).show(60)
