@@ -33,12 +33,14 @@ class Astar:
     answer_node: "Node"
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
-    def __init__(self, matrix, alpha, conected=True, eight_direction=False, ida_star=False, iterate=2):
+    def __init__(self, matrix, alpha, conected=True, eight_direction=False, is_idastar=False, iterate=2):
         if eight_direction:
             self.directions = [(-1, 0), (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
 
         self.matrix = matrix
+        # find start point
         self.row_start, self.col_start = self.find_node(2)
+        # find end point
         self.row_goal, self.col_goal = self.find_node(3)
         self.alpha = alpha
         self.map_height = len(matrix)
@@ -47,7 +49,10 @@ class Astar:
         self.is_connected = conected
         self.start_node = Node(None, self.row_start, self.col_start, self.row_goal, self.col_goal, 0, self.alpha)
         self.queue.append(self.start_node)
-        self.is_idastar = ida_star
+
+        # ida star addon
+        self.is_idastar = is_idastar
+        self.found_idastar = False
         self.iterate = iterate
         self.max_f = 1
 
@@ -75,15 +80,17 @@ class Astar:
             if 0 <= row_new < self.map_height and 0 <= col_new < self.map_width and (
                     row_new, col_new) not in self.all_visited:
                 if self.matrix[row_new][col_new] != 1:
-                    new_node = Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha)
+                    node_new = Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha)
                     if self.is_idastar:
-                        if new_node.f <= self.max_f:
+                        if node_new.f <= self.max_f:
                             self.children_counter += 1
-                            self.queue.append(new_node)
+                            self.queue.append(node_new)
                             self.all_visited.add((row_new, col_new))
+                        else:
+                            self.found_idastar = True
                     else:
                         self.children_counter += 1
-                        self.queue.append(new_node)
+                        self.queue.append(node_new)
                         self.all_visited.add((row_new, col_new))
 
     def path(self) -> list[(int, int)]:
@@ -108,6 +115,7 @@ class Astar:
                     print(0, end=" ")
 
     def run(self):
+
         if len(self.queue):
             # while len(self.queue)>=1 :
             # num -= 10
@@ -126,15 +134,20 @@ class Astar:
             return True
         else:
             if self.is_idastar:
-                self.all_visited.clear()
-                self.queue.append(self.start_node)
-                self.max_f += self.iterate
+                if self.found_idastar :
+                    self.found_idastar = False
+                    self.all_visited.clear()
+                    self.queue.append(self.start_node)
+                    self.max_f += self.iterate
+
+                else :
+                    self.is_idastar = False
             return False
 
 
 if __name__ == "__main__":
     matrix = [
-        [0, 0, 0, 0, 0, 1, 2, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
         [0, 1, 0, 0, 1, 1, 1, 0, 1, 0],
         [0, 1, 0, 0, 1, 3, 1, 0, 1, 0],
         [0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
@@ -143,7 +156,7 @@ if __name__ == "__main__":
         [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
         [0, 1, 1, 0, 0, 1, 0, 0, 1, 0],
         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 0, 1, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 1, 2, 1, 1, 1, 0, 0],
     ]
     # matrix = [
     #     [0, 0, 0, 1, 3],
@@ -156,5 +169,5 @@ if __name__ == "__main__":
     # If alpha be more that 1 algorithm gonna be Greedy like greedo
     # If alpha be 1 the algorithm is a*
 
-    a = Astar(matrix, 1, conected=True, eight_direction=False,ida_star=True )
-    Display(a).show(10)
+    a = Astar(matrix, 1, conected=True, eight_direction=False, is_idastar=True, iterate=1)
+    Display(a).show(clock=20)
