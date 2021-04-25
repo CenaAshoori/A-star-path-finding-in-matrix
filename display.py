@@ -94,7 +94,14 @@ class Display:
 
 
             if self.astar.run():
-                if self.astar.is_found:
+                # util not find draw visited and candidate
+                if not self.astar.is_found:
+                    # draw visited node
+                    self.drawCell(self.astar.all_visited, (86, 101, 115), (44, 62, 80))
+                    # draw next candidate
+                    self.drawNextCandidate(self.astar.queue, (212, 172, 13), (244, 208, 63))
+                # when find path
+                else :
                     # draw answer
                     # number in tuple are rgb code , don't panic
                     self.drawCell(self.astar.path(), (23, 165, 137), (17, 120, 100))
@@ -106,14 +113,10 @@ class Display:
                     self.screen.blit(text_path, textRect)
                     textRect.center = (self.WIDTH // 2, (self.HEIGHT // 2) + self.CELL_HEIGHT)
                     self.screen.blit(text_childrens, textRect)
-                else :
-                    # draw visited node
-                    self.drawCell(self.astar.all_visited, (86, 101, 115), (44, 62, 80))
-                    # draw next candidate
-                    self.drawNextCandidate(self.astar.queue, (212, 172, 13), (244, 208, 63))
-            else:
+            # No path message
+            elif not self.astar.is_found:
                 font = pygame.font.Font('freesansbold.ttf', 32)
-                text_nopath = font.render(f"No Path,{self.astar.children_counter} Node Visited", True, ORANGE, (0, 0, 0))
+                text_nopath = font.render(f"No Path - {self.astar.children_counter} Node Visited", True, ORANGE, (0, 0, 0))
                 textRect = text_nopath.get_rect()
                 textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
                 self.screen.blit(text_nopath, textRect)
