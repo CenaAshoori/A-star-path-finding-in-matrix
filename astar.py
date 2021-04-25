@@ -74,6 +74,7 @@ class Astar:
                     self.children_counter += 1
                     self.queue.append(
                         Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha))
+                    self.all_visited.add((row_new, col_new))
 
     def is_not_duplicated(self, node: "Node", row_new: int, col_new: int) -> bool:
         while node != None:
@@ -133,15 +134,15 @@ class Astar:
 
 if __name__ == "__main__":
     matrix = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 3, 1, 0, 0, 0],
-        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 1, 1, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 3, 0, 0, 1, 0],
+        [0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 1, 0, 0, 1, 0, 0, 0, 1, 0],
+        [0, 0, 0, 1, 1, 0, 1, 0, 1, 0],
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [0, 1, 1, 0, 0, 2, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+        [0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+        [0, 2, 0, 0, 0, 0, 0, 1, 0, 0],
         [0, 0, 0, 1, 0, 1, 1, 1, 0, 0],
     ]
     # matrix = [

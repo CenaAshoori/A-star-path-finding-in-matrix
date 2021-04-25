@@ -106,9 +106,9 @@ class Display:
                 textRect.center = (self.WIDTH // 2, (self.HEIGHT // 2) + self.CELL_HEIGHT)
                 self.screen.blit(text_childrens, textRect)
             else:
-                # draw next candidate
-                self.drawNextCandidate(self.node.queue, (212, 172, 13), (244, 208, 63))
                 # draw visited node
                 self.drawCell(self.node.all_visited, (86, 101, 115), (44, 62, 80))
+                # draw next candidate
+                self.drawNextCandidate(self.node.queue, (212, 172, 13), (244, 208, 63))
             pygame.display.update()
             FPSCLOCK.tick(clock)
