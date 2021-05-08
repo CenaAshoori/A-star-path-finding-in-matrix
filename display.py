@@ -26,7 +26,8 @@ class Display:
     def __init__(self, node: "Astar"):
         self.matrix = node.matrix
         self.astar = node
-        self.CELL_SIZE = 500 // max(len(self.matrix), len(self.matrix[0]))
+        # self.CELL_SIZE = 1024 // max(len(self.matrix), len(self.matrix[0]))
+        self.CELL_SIZE = int (1024 **.47)
         self.HEIGHT = len(self.matrix) * self.CELL_SIZE
         self.WIDTH = len(self.matrix[0]) * self.CELL_SIZE
 
@@ -34,8 +35,11 @@ class Display:
 
         self.CELL_WIDTH = self.CELL_SIZE
         self.CELL_HEIGHT = self.CELL_SIZE
+
+
         pygame.display.set_caption('A* - Find Shortest Path')
         pygame.init()
+        self.font = pygame.font.Font('freesansbold.ttf', self.CELL_SIZE//2)
 
     def terminate(self):
         pygame.quit()
@@ -93,7 +97,7 @@ class Display:
                     self.terminate()
 
 
-            if self.astar.run():
+            if self.astar.expand_node():
                 # util not find draw visited and candidate
                 if not self.astar.is_found:
                     # draw visited node
@@ -105,21 +109,20 @@ class Display:
                     # draw answer
                     # number in tuple are rgb code , don't panic
                     self.drawCell(self.astar.path(), (23, 165, 137), (17, 120, 100))
-                    font = pygame.font.Font('freesansbold.ttf', 32)
-                    text_path = font.render(f"Path Length:{len(self.astar.path())}", True, ORANGE, (0, 0, 0))
-                    text_childrens = font.render(f"Created Children:{self.astar.children_counter}", True, ORANGE, (0, 0, 0))
+                    text_path = self.font.render(f"Path Length:{len(self.astar.path())}", True, ORANGE, (0, 0, 0))
+                    text_childrens = self.font.render(f"Created Children:{self.astar.children_counter}", True, ORANGE, (0, 0, 0))
                     textRect = text_path.get_rect()
                     textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
                     self.screen.blit(text_path, textRect)
                     textRect.center = (self.WIDTH // 2, (self.HEIGHT // 2) + self.CELL_HEIGHT)
                     self.screen.blit(text_childrens, textRect)
-            # No path message
+
+            # No path message or if it's idastar start again
             else:
-                if self.astar.is_idastar :
+                if self.astar.is_iterative :
                     self.visualizeGrid()
                 else :
-                    font = pygame.font.Font('freesansbold.ttf', 32)
-                    text_nopath = font.render(f"No Path - {self.astar.children_counter} Node Visited", True, ORANGE, (0, 0, 0))
+                    text_nopath = self.font.render(f"No Path - {self.astar.children_counter} Node Visited", True, ORANGE, (0, 0, 0))
                     textRect = text_nopath.get_rect()
                     textRect.center = (self.WIDTH // 2, self.HEIGHT // 2)
                     self.screen.blit(text_nopath, textRect)

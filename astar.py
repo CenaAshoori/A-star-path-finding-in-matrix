@@ -1,3 +1,5 @@
+import sys
+
 from display import Display
 
 
@@ -33,7 +35,7 @@ class Astar:
     answer_node: "Node"
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
-    def __init__(self, matrix, alpha, conected=True, eight_direction=False, is_idastar=False, iterate=2):
+    def __init__(self, matrix, alpha=1, conected_edge=False, eight_direction=False, iterative_search=False, iterate=2):
         if eight_direction:
             self.directions = [(-1, 0), (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
 
@@ -46,15 +48,15 @@ class Astar:
         self.map_height = len(matrix)
         self.map_width = len(matrix[0])
         self.is_found = False
-        self.is_connected = conected
+        self.is_connected = conected_edge
         self.start_node = Node(None, self.row_start, self.col_start, self.row_goal, self.col_goal, 0, self.alpha)
         self.queue.append(self.start_node)
 
         # ida star addon
-        self.is_idastar = is_idastar
+        self.is_iterative = iterative_search
         self.is_found_greater_children = False
-        self.iterate = iterate
-        self.max_f = 1
+        self.next_f_bound = sys.maxsize
+        self.max_f = 0
 
     def find_node(self, num):
         for row in range(len(self.matrix)):
@@ -81,12 +83,13 @@ class Astar:
                     row_new, col_new) not in self.all_visited:
                 if self.matrix[row_new][col_new] != 1:
                     node_new = Node(node, row_new, col_new, self.row_goal, self.col_goal, node.g + 1, self.alpha)
-                    if self.is_idastar:
+                    if self.is_iterative:
                         if node_new.f <= self.max_f:
                             self.children_counter += 1
                             self.queue.append(node_new)
                             self.all_visited.add((row_new, col_new))
                         else:
+                            self.next_f_bound = min (node_new.f ,self.next_f_bound)
                             self.is_found_greater_children = True
                     else:
                         self.children_counter += 1
@@ -99,6 +102,7 @@ class Astar:
         while node != None:
             ans.append((node.row, node.col))
             node = node.parent
+        ans.reverse()
         return ans
 
     def print_path(self):
@@ -114,7 +118,7 @@ class Astar:
                 else:
                     print(0, end=" ")
 
-    def run(self):
+    def expand_node(self):
 
         if len(self.queue):
             # while len(self.queue)>=1 :
@@ -134,42 +138,61 @@ class Astar:
             return True
         else:
             if not self.is_found:
-                if self.is_idastar :
-                    if self.is_found_greater_children :
+                if self.is_iterative:
+                    if self.is_found_greater_children:
                         self.is_found_greater_children = False
                         self.all_visited.clear()
                         self.queue.append(self.start_node)
-                        self.max_f += self.iterate
+                        self.max_f = self.next_f_bound
+                        self.next_f_bound = sys.maxsize
 
-                    else :
-                        self.is_idastar = False
+                    else:
+                        self.is_iterative = False
                 return False
-            else :
+            else:
                 return True
+
+    def solve_complete(self):
+        while self.queue:
+            self.expand_node()
+        if self.is_found:
+            # list of node from start point to end
+            return self.path()
+        else:
+            return None
+
 
 if __name__ == "__main__":
     matrix = [
-        [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-        [0, 1, 0, 0, 1, 1, 1, 0, 1, 0],
-        [0, 1, 0, 1, 1, 3, 1, 0, 1, 0],
-        [0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0, 0, 1, 1, 0],
-        [0, 0, 0, 1, 1, 0, 1, 0, 1, 0],
-        [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 1, 0, 0, 1, 0],
-        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 0, 1, 2, 1, 1, 1, 0, 0],
+        [3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1],
+        [0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0],
+        [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [2, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0],
+        [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
     ]
     # matrix = [
     #     [0, 0, 0, 1, 3],
-    #     [0, 1, 0, 1, 1],
+    #     [0, 1, 0, 1, 0],
     #     [0, 1, 0, 1, 0],
     #     [0, 0, 0, 1, 0],
     #     [2, 1, 0, 0, 0],
     # ]
 
-    # If alpha be more that 1 algorithm gonna be Greedy like greedo
+    # If alpha be more that 1 algorithm gonna be Greedy
     # If alpha be 1 the algorithm is a*
 
-    a = Astar(matrix, 1, conected=False, eight_direction=False, is_idastar=True, iterate=1)
-    Display(a).show(clock=60)
+    astar = Astar(matrix,
+                  # IDA STAR
+                  alpha=1,
+                  iterative_search=True,
+                )
+    Display(astar).show(clock=60)
